@@ -40,7 +40,15 @@ export function ShowImg({ image }: { image: string | null }) {
   return (
     <div className="absolute bottom-0 z-0">
       <div></div>
-      {image && <Image src={image} alt="Taken photo" className="rounded-lg" />}
+      {image && (
+        <Image
+          src={image}
+          width={100}
+          height={100}
+          alt="Taken photo"
+          className="rounded-lg"
+        />
+      )}
     </div>
   );
 }
@@ -64,6 +72,7 @@ export default function CameraEnhanced() {
         videoConstraints={videoConstraints}
         className="h-full w-screen object-cover"
         ref={webcamRef}
+        mirrored={true}
       ></Webcam>
       <Nav capture={capture} />
       <ShowImg image={image} />
