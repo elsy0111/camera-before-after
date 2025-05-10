@@ -46,7 +46,7 @@ export function ShowImg({ image }: { image: string | null }) {
           height={0}
           width={200}
           alt="Taken photo"
-          className="rounded-bl-lg shadow-lg"
+          className="rounded-bl-md shadow-lg"
         />
       )}
     </div>
