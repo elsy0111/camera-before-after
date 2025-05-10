@@ -38,15 +38,15 @@ export function Nav({ capture }: { capture: () => void }) {
 
 export function ShowImg({ image }: { image: string | null }) {
   return (
-    <div className="absolute bottom-0 z-0">
+    <div className="absolute top-0 right-0 z-0">
       <div></div>
       {image && (
         <Image
           src={image}
-          width={100}
-          height={100}
+          height={0}
+          width={200}
           alt="Taken photo"
-          className="rounded-lg"
+          className="rounded-bl-lg shadow-lg"
         />
       )}
     </div>
@@ -65,12 +65,12 @@ export default function CameraEnhanced() {
   }, [webcamRef]);
 
   return (
-    <div className="h-screen bg-gray-500">
+    <div className="h-svh bg-gray-500">
       <Webcam
         audio={false}
         screenshotFormat="image/jpeg"
         videoConstraints={videoConstraints}
-        className="h-full w-screen object-cover"
+        className="h-full w-full object-cover"
         ref={webcamRef}
         mirrored={true}
       ></Webcam>
