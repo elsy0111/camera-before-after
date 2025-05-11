@@ -218,7 +218,7 @@ export function ShowImg({image, imageSize, opacity}: {image: string | null, imag
 	};
 
 	return (
-		<div className="z-1 touch-none overflow-hidden"
+		<div className="z-1 touch-none"
 			style={{
 				position: "absolute",
 				top: position.y,
@@ -264,8 +264,8 @@ export default function CameraEnhanced() {
 
 	const videoConstraints = {
 		facingMode: facingMode,
-		height: 1440, // QHD
-		width: 2560,
+		height: 1080, // FHD
+		width: 1920, 
 	};
 
 	const [isClient, setIsClient] = useState(false);
@@ -280,7 +280,7 @@ export default function CameraEnhanced() {
 	}
 
 	return (
-		<div className="h-svh bg-gray-500 overflow-hidden">
+		<div className="h-svh bg-gray-500">
 			<NavUpper previewImageSize={previewImageSize} setPreviewImageSize={setPreviewImageSize} opacity={opacity}
 				setOpacity={setOpacity} />
 			<Webcam
