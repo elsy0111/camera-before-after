@@ -25,7 +25,7 @@ export default function RootLayout({
 				{/* zoom 禁止！！！ */}
 				<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 			</head>
-			<body className="h-svh bg-gray-500 font-mono">
+			<body className="h-svh bg-gray-500 font-mono overflow-hidden">
 				{children}
 			</body>
 		</html>

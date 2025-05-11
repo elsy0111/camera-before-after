@@ -264,6 +264,8 @@ export default function CameraEnhanced() {
 
 	const videoConstraints = {
 		facingMode: facingMode,
+		height: 1080,
+		width: 1920,
 	};
 
 	const [isClient, setIsClient] = useState(false);
@@ -285,6 +287,8 @@ export default function CameraEnhanced() {
 				audio={false}
 				screenshotFormat="image/jpeg"
 				videoConstraints={videoConstraints}
+				height={WINDOW_WIDTH}
+				width={WINDOW_WIDTH}
 				className="h-full w-full object-contain"
 				ref={webcamRef}
 				mirrored={mirrored}
