@@ -13,13 +13,7 @@ if (typeof window !== "undefined") {
 
 // fontawesome icon
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faRotate, faUpload, faArrowRightArrowLeft} from "@fortawesome/free-solid-svg-icons";
-
-function zfill(num: number, size: number): string {
-	let numstr = num.toString();
-	while (numstr.length < size) numstr = "0" + numstr;
-	return numstr;
-}
+import {faRotate, faImage, faDownload, faArrowRightArrowLeft, faGhost, faMaximize} from "@fortawesome/free-solid-svg-icons";
 
 export function NavUpper(
 	{previewImageSize, setPreviewImageSize, opacity, setOpacity}:
@@ -45,8 +39,8 @@ export function NavUpper(
 												 #bbb ${previewImageSize / WINDOW_WIDTH * 100}%)`,
 					}}></input>
 				{/* Size value */}
-				<div className="text-white text-lg rotate-90">
-					{zfill(Math.floor(previewImageSize / WINDOW_WIDTH * 100), 3)}%
+				<div className="text-white text-lg rotate-90 ml-2">
+					<FontAwesomeIcon icon={faMaximize} className="text-white text-2xl" />
 				</div>
 			</div>
 			{/* Opacity slider */}
@@ -65,7 +59,9 @@ export function NavUpper(
 					}}
 				/>
 				{/* Opacity value */}
-				<div className="text-white text-lg rotate-90">{zfill(opacity, 3)}%</div>
+				<div className="text-white text-lg rotate-90 ml-2">
+					<FontAwesomeIcon icon={faGhost} className="text-white text-2xl" />
+				</div>
 			</div>
 		</div>
 	);
@@ -77,6 +73,7 @@ export function Nav({
 	setFacingMode,
 	mirrored,
 	setMirrored,
+	image,
 	setImage,
 }: {
 	capture: () => void;
@@ -84,6 +81,7 @@ export function Nav({
 	setFacingMode: (mode: string) => void;
 	mirrored: boolean;
 	setMirrored: (mode: boolean) => void;
+	image: string | null;
 	setImage: (image: string | null) => void;
 }) {
 	// function to handle Upload
@@ -104,15 +102,34 @@ export function Nav({
 		input.click();
 	};
 
+	// function to handle Download
+	const handleDownload = () => {
+		if (image) {
+			const link = document.createElement("a");
+			link.href = image;
+			link.download = `image_${new Date().toISOString()}.jpg`;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
+	}
+
 	return (
 		<div className="absolute bottom-0 w-full px-10 z-2 py-3 bg-gray-800/10">
 			<div className="grid grid-cols-5 items-center gap-10">
 				{/* Upload button */}
 				<button
-					className="h-10 bg-yellow-500 rounded-lg flex items-center justify-center px-4 col-span-2"
+					className="h-10 bg-yellow-500 rounded-lg flex items-center justify-center px-5"
 					onClick={handleUpload}
 				>
-					<FontAwesomeIcon icon={faUpload} className="text-white text-2xl rotate-90" />
+					<FontAwesomeIcon icon={faImage} className="text-white text-2xl rotate-90" />
+				</button>
+				{/* Download button */}
+				<button
+					className="h-10 bg-green-500 rounded-lg flex items-center justify-center px-5"
+					onClick={handleDownload}
+				>
+					<FontAwesomeIcon icon={faDownload} className="text-white text-2xl rotate-90" />
 				</button>
 				{/* Capture button */}
 				<div className="justify-self-center">
@@ -127,7 +144,7 @@ export function Nav({
 				</div>
 				{/* Change camera button */}
 				<button
-					className="h-10 bg-red-500 rounded-lg flex items-center justify-center px-4"
+					className="h-10 bg-red-500 rounded-lg flex items-center justify-center px-5"
 					// change inside outside camera
 					onClick={() => {
 						setFacingMode(facingMode === "user" ? "environment" : "user");
@@ -137,7 +154,7 @@ export function Nav({
 				</button>
 				{/* Mirror button */}
 				<button
-					className="h-10 bg-blue-500 rounded-lg flex items-center justify-center px-4"
+					className="h-10 bg-blue-500 rounded-lg flex items-center justify-center px-5"
 					onClick={() => {
 						setMirrored(!mirrored);
 					}}
@@ -279,6 +296,7 @@ export default function CameraEnhanced() {
 				setFacingMode={setFacingMode}
 				mirrored={mirrored}
 				setMirrored={setMirrored}
+				image={image}
 				setImage={setImage}
 			/>
 			<ShowImg image={image} imageSize={previewImageSize} opacity={opacity} />
