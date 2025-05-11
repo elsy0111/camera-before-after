@@ -107,7 +107,7 @@ export function Nav({
 		if (image) {
 			const link = document.createElement("a");
 			link.href = image;
-			link.download = `image_${new Date().toISOString()}.jpg`;
+			link.download = `image_${new Date().toISOString()}.png`;
 			document.body.appendChild(link);
 			link.click();
 			document.body.removeChild(link);
@@ -264,8 +264,8 @@ export default function CameraEnhanced() {
 
 	const videoConstraints = {
 		facingMode: facingMode,
-		height: 3024,
-		width: 4032,
+		height: 1440, // QHD
+		width: 2560,
 	};
 
 	const [isClient, setIsClient] = useState(false);
@@ -285,10 +285,8 @@ export default function CameraEnhanced() {
 				setOpacity={setOpacity} />
 			<Webcam
 				audio={false}
-				screenshotFormat="image/jpeg"
+				screenshotFormat="image/png"
 				videoConstraints={videoConstraints}
-				height={WINDOW_WIDTH}
-				width={WINDOW_WIDTH}
 				className="h-full w-full object-contain"
 				forceScreenshotSourceSize={true}
 				ref={webcamRef}
