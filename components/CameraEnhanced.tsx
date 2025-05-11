@@ -47,48 +47,47 @@ export function Nav({
 
   return (
     <div className="absolute bottom-0 w-full px-10 mb-3 z-1">
-      <div className="flex items-center justify-around">
+      <div className="grid grid-cols-5 items-center gap-10">
         {/* Upload button */}
         <button
-          className="w-24 h-10 bg-yellow-500 rounded-lg flex items-center justify-center px-4"
+          className="h-10 bg-yellow-500 rounded-lg flex items-center justify-center px-4 col-span-2"
           onClick={handleUpload}
         >
           <FontAwesomeIcon icon={faUpload} className="text-white text-2xl" />
         </button>
-        <button
-          className="h-20 w-20 bg-white rounded-full flex items-center justify-center"
-          onClick={capture}
-        >
-          <div className="h-18 w-18 rounded-full bg-black flex items-center justify-center">
-            <div className="h-15 w-15 rounded-full bg-white"></div>
-          </div>
-        </button>
-        <div className="flex items-center justify-between w-24">
+        {/* Capture button */}
+        <div className="justify-self-center">
           <button
-            className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center px-4"
-            // change inside outside camera
-            onClick={() => {
-              if (facingMode === "user") {
-                setFacingMode("environment");
-              } else {
-                setFacingMode("user");
-              }
-            }}
+            className="h-20 w-20 bg-white rounded-full flex items-center justify-center"
+            onClick={capture}
           >
-            <FontAwesomeIcon icon={faRotate} className="text-white text-2xl" />
-          </button>
-          <button
-            className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center px-4"
-            onClick={() => {
-              setMirrored(!mirrored);
-            }}
-          >
-            <FontAwesomeIcon
-              icon={faArrowRightArrowLeft}
-              className="text-white text-2xl"
-            />{" "}
+            <div className="h-18 w-18 rounded-full bg-black flex items-center justify-center">
+              <div className="h-15 w-15 rounded-full bg-white"></div>
+            </div>
           </button>
         </div>
+        {/* Change camera button */}
+        <button
+          className="h-10 bg-red-500 rounded-lg flex items-center justify-center px-4"
+          // change inside outside camera
+          onClick={() => {
+            setFacingMode(facingMode === "user" ? "environment" : "user");
+          }}
+        >
+          <FontAwesomeIcon icon={faRotate} className="text-white text-2xl" />
+        </button>
+        {/* Mirror button */}
+        <button
+          className="h-10 bg-blue-500 rounded-lg flex items-center justify-center px-4"
+          onClick={() => {
+            setMirrored(!mirrored);
+          }}
+        >
+          <FontAwesomeIcon
+            icon={faArrowRightArrowLeft}
+            className="text-white text-2xl"
+          />
+        </button>
       </div>
     </div>
   );
@@ -97,7 +96,6 @@ export function Nav({
 export function ShowImg({ image }: { image: string | null }) {
   return (
     <div className="absolute top-0 right-0 z-0">
-      <div></div>
       {image && (
         <Image
           src={image}
