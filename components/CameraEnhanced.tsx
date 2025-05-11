@@ -264,8 +264,8 @@ export default function CameraEnhanced() {
 
 	const videoConstraints = {
 		facingMode: facingMode,
-		height: 1080,
-		width: 1920,
+		height: 3024,
+		width: 4032,
 	};
 
 	const [isClient, setIsClient] = useState(false);
