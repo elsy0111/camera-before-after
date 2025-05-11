@@ -18,20 +18,44 @@ export function Nav({
   setFacingMode,
   mirrored,
   setMirrored,
+  setImage,
 }: {
   capture: () => void;
   facingMode: string;
   setFacingMode: (mode: string) => void;
   mirrored: boolean;
   setMirrored: (mode: boolean) => void;
+  setImage: (image: string | null) => void;
 }) {
+  // function to handle Upload
+  const handleUpload = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.capture = "environment";
+    input.onchange = (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImage(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    input.click();
+  };
+
   return (
     <div className="absolute bottom-0 w-full px-10 mb-3 z-1">
       <div className="flex items-center justify-center gap-4">
         {/* Upload button */}
-        <div className="w-24 h-10 bg-yellow-500 rounded-lg flex items-center justify-center px-4">
+        <button
+          className="w-24 h-10 bg-yellow-500 rounded-lg flex items-center justify-center px-4"
+          onClick={handleUpload}
+        >
           <FontAwesomeIcon icon={faUpload} className="text-white text-2xl" />
-        </div>
+        </button>
         <button
           className="h-20 w-20 bg-white rounded-full flex items-center justify-center"
           onClick={capture}
@@ -119,6 +143,7 @@ export default function CameraEnhanced() {
         setFacingMode={setFacingMode}
         mirrored={mirrored}
         setMirrored={setMirrored}
+        setImage={setImage}
       />
       <ShowImg image={image} />
     </div>
