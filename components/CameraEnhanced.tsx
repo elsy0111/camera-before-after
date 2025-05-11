@@ -10,34 +10,48 @@ const ds = 40; // delta size
 
 // fontawesome icon
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faRotate} from "@fortawesome/free-solid-svg-icons";
-import {faUpload} from "@fortawesome/free-solid-svg-icons";
-import {faArrowRightArrowLeft} from "@fortawesome/free-solid-svg-icons";
-import {faPlus} from "@fortawesome/free-solid-svg-icons";
-import {faMinus} from "@fortawesome/free-solid-svg-icons";
+import {faRotate, faUpload, faArrowRightArrowLeft, faPlus, faMinus} from "@fortawesome/free-solid-svg-icons";
 
 export function NavUpper(
-	{previewImageSize, setPreviewImageSize}: {previewImageSize: number; setPreviewImageSize: (size: number) => void;}) {
+	{previewImageSize, setPreviewImageSize, opacity, setOpacity}:
+		{
+			previewImageSize: number; setPreviewImageSize: (size: number) => void; opacity: number;
+			setOpacity: (opacity: number) => void
+		}) {
 	return (
 		<div className="absolute top-0 left-0 py-3 w-full px-10 flex items-center z-2 gap-10">
 			<button className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center"
 				onClick={() => {
-					if (previewImageSize - ds > 0) {
-						setPreviewImageSize(previewImageSize - ds);
-					}
+					setPreviewImageSize(Math.max(previewImageSize - ds, 50));
 				}}
 			>
 				<FontAwesomeIcon icon={faMinus} className="text-white text-2xl rotate-90" />
 			</button>
 			<button className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center"
 				onClick={() => {
-					if (previewImageSize + ds <= 1000) {
-						setPreviewImageSize(previewImageSize + ds);
-					}
+					setPreviewImageSize(Math.min(previewImageSize + ds, window.innerWidth));
 				}}
 			>
 				<FontAwesomeIcon icon={faPlus} className="text-white text-2xl rotate-90" />
 			</button>
+			{/* Opacity slider */}
+			<div className="flex items-center">
+				<input
+					type="range"
+					min={0}
+					max={100}
+					value={opacity}
+					onChange={(e) => {
+						setOpacity(parseInt(e.target.value));
+					}}
+					className="h-2 rounded-lg appearance-none cursor-pointer"
+					style={{
+						background: `linear-gradient(to right, #4caf50 ${opacity}%, #bbb ${opacity}%)`,
+					}}
+				/>
+				{/* Opacity value */}
+				<div className="text-white text-lg rotate-90">{opacity}%</div>
+			</div>
 		</div>
 	);
 }
@@ -123,16 +137,79 @@ export function Nav({
 	);
 }
 
-export function ShowImg({image, imageSize}: {image: string | null, imageSize: number}) {
+export function ShowImg({image, imageSize, opacity}: {image: string | null, imageSize: number, opacity: number}) {
+	const [position, setPosition] = useState<{x: number, y: number}>({x: 0, y: 0});
+	const isDragging = useRef<boolean>(false);
+	const offset = useRef({x: 0, y: 0});
+
+	const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+		isDragging.current = true;
+		offset.current = {
+			x: e.clientX - position.x,
+			y: e.clientY - position.y,
+		};
+	};
+
+	const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+		if (!isDragging.current) return;
+		setPosition({
+			x: e.clientX - offset.current.x,
+			y: e.clientY - offset.current.y,
+		});
+	};
+
+	const handleMouseUp = () => {
+		isDragging.current = false;
+	};
+
+	// タッチ用イベント
+	const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+		isDragging.current = true;
+		const touch = e.touches[0];
+		offset.current = {
+			x: touch.clientX - position.x,
+			y: touch.clientY - position.y,
+		};
+	};
+
+	const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+		if (!isDragging.current) return;
+		const touch = e.touches[0];
+		setPosition({
+			x: touch.clientX - offset.current.x,
+			y: touch.clientY - offset.current.y,
+		});
+	};
+
+	const handleTouchEnd = () => {
+		isDragging.current = false;
+	};
+
 	return (
-		<div className="absolute top-0 right-0 z-0">
+		<div
+			className="z-10 touch-none"
+			style={{
+				position: "absolute",
+				top: position.y,
+				left: position.x,
+				cursor: "grab",
+			}}
+			onMouseDown={handleMouseDown}
+			onMouseMove={handleMouseMove}
+			onMouseUp={handleMouseUp}
+			onMouseLeave={handleMouseUp}
+			onTouchStart={handleTouchStart}
+			onTouchMove={handleTouchMove}
+			onTouchEnd={handleTouchEnd}
+		>
 			{image && (
 				<Image
 					src={image}
 					height={0}
 					width={imageSize}
 					alt="Taken photo"
-					className="rounded-bl-md shadow-lg"
+					className="rounded-md shadow-lg"
+					style={{opacity: opacity / 100}}
 				/>
 			)}
 		</div>
@@ -145,6 +222,7 @@ export default function CameraEnhanced() {
 	const [facingMode, setFacingMode] = useState<string>("environment");
 	const [mirrored, setMirrored] = useState<boolean>(false);
 	const [previewImageSize, setPreviewImageSize] = useState<number>(200);
+	const [opacity, setOpacity] = useState<number>(100);
 
 	const capture = useCallback(() => {
 		if (webcamRef.current) {
@@ -159,7 +237,8 @@ export default function CameraEnhanced() {
 
 	return (
 		<div className="h-svh bg-gray-500">
-			<NavUpper previewImageSize={previewImageSize} setPreviewImageSize={setPreviewImageSize} />
+			<NavUpper previewImageSize={previewImageSize} setPreviewImageSize={setPreviewImageSize} opacity={opacity}
+				setOpacity={setOpacity} />
 			{/* Webcam component */}
 			<Webcam
 				audio={false}
@@ -178,7 +257,7 @@ export default function CameraEnhanced() {
 				setMirrored={setMirrored}
 				setImage={setImage}
 			/>
-			<ShowImg image={image} imageSize={previewImageSize} />
+			<ShowImg image={image} imageSize={previewImageSize} opacity={opacity} />
 		</div>
 	);
 }
