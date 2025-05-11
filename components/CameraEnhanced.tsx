@@ -4,13 +4,22 @@
 import Webcam from "react-webcam";
 import Image from "next/image";
 
-import React, {useCallback, useRef, useState} from "react";
+import React, {useCallback, useRef, useState, useEffect} from "react";
 
-const ds = 40; // delta size
+let WINDOW_WIDTH = 0;
+if (typeof window !== "undefined") {
+	WINDOW_WIDTH = window.innerWidth;
+}
 
 // fontawesome icon
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faRotate, faUpload, faArrowRightArrowLeft, faPlus, faMinus} from "@fortawesome/free-solid-svg-icons";
+import {faRotate, faUpload, faArrowRightArrowLeft} from "@fortawesome/free-solid-svg-icons";
+
+function zfill(num: number, size: number): string {
+	let numstr = num.toString();
+	while (numstr.length < size) numstr = "0" + numstr;
+	return numstr;
+}
 
 export function NavUpper(
 	{previewImageSize, setPreviewImageSize, opacity, setOpacity}:
@@ -19,21 +28,27 @@ export function NavUpper(
 			setOpacity: (opacity: number) => void
 		}) {
 	return (
-		<div className="absolute top-0 left-0 py-3 w-full px-10 flex items-center z-2 gap-10">
-			<button className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center"
-				onClick={() => {
-					setPreviewImageSize(Math.max(previewImageSize - ds, 50));
-				}}
-			>
-				<FontAwesomeIcon icon={faMinus} className="text-white text-2xl rotate-90" />
-			</button>
-			<button className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center"
-				onClick={() => {
-					setPreviewImageSize(Math.min(previewImageSize + ds, window.innerWidth));
-				}}
-			>
-				<FontAwesomeIcon icon={faPlus} className="text-white text-2xl rotate-90" />
-			</button>
+		<div className="absolute top-0 left-0 py-5 w-full px-10 flex items-center z-2 gap-5 justify-center">
+			{/* Size slider */}
+			<div className="flex items-center">
+				<input
+					type="range"
+					min={0}
+					max={WINDOW_WIDTH}
+					value={previewImageSize}
+					onChange={(e) => {
+						setPreviewImageSize(parseInt(e.target.value));
+					}}
+					className="h-2 rounded-lg appearance-none cursor-pointer"
+					style={{
+						background: `linear-gradient(to right, #4caf50 ${previewImageSize / WINDOW_WIDTH * 100}%, 
+												 #bbb ${previewImageSize / WINDOW_WIDTH * 100}%)`,
+					}}></input>
+				{/* Size value */}
+				<div className="text-white text-lg rotate-90">
+					{zfill(Math.floor(previewImageSize / WINDOW_WIDTH * 100), 3)}%
+				</div>
+			</div>
 			{/* Opacity slider */}
 			<div className="flex items-center">
 				<input
@@ -50,7 +65,7 @@ export function NavUpper(
 					}}
 				/>
 				{/* Opacity value */}
-				<div className="text-white text-lg rotate-90">{opacity}%</div>
+				<div className="text-white text-lg rotate-90">{zfill(opacity, 3)}%</div>
 			</div>
 		</div>
 	);
@@ -90,7 +105,7 @@ export function Nav({
 	};
 
 	return (
-		<div className="absolute bottom-0 w-full px-10 z-1 py-3 bg-gray-800/10">
+		<div className="absolute bottom-0 w-full px-10 z-2 py-3 bg-gray-800/10">
 			<div className="grid grid-cols-5 items-center gap-10">
 				{/* Upload button */}
 				<button
@@ -186,8 +201,7 @@ export function ShowImg({image, imageSize, opacity}: {image: string | null, imag
 	};
 
 	return (
-		<div
-			className="z-10 touch-none"
+		<div className="z-1 touch-none"
 			style={{
 				position: "absolute",
 				top: position.y,
@@ -205,10 +219,10 @@ export function ShowImg({image, imageSize, opacity}: {image: string | null, imag
 			{image && (
 				<Image
 					src={image}
-					height={0}
+					height={imageSize}
 					width={imageSize}
 					alt="Taken photo"
-					className="rounded-md shadow-lg"
+					className="rounded-md shadow-lg max-w-screen max-h-screen"
 					style={{opacity: opacity / 100}}
 				/>
 			)}
@@ -235,11 +249,21 @@ export default function CameraEnhanced() {
 		facingMode: facingMode,
 	};
 
+	const [isClient, setIsClient] = useState(false);
+
+	// クライアント側のみ実行される
+	useEffect(() => {
+		setIsClient(true);
+	}, []);
+
+	if (!isClient) {
+		return <div className="h-screen flex items-center justify-center">Loading...</div>;
+	}
+
 	return (
 		<div className="h-svh bg-gray-500">
 			<NavUpper previewImageSize={previewImageSize} setPreviewImageSize={setPreviewImageSize} opacity={opacity}
 				setOpacity={setOpacity} />
-			{/* Webcam component */}
 			<Webcam
 				audio={false}
 				screenshotFormat="image/jpeg"
