@@ -13,7 +13,7 @@ if (typeof window !== "undefined") {
 
 // fontawesome icon
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faRotate, faImage, faDownload, faArrowRightArrowLeft, faGhost, faMaximize} from "@fortawesome/free-solid-svg-icons";
+import {faCamera, faImage, faDownload, faArrowRightArrowLeft, faGhost, faMaximize} from "@fortawesome/free-solid-svg-icons";
 
 export function NavUpper(
 	{previewImageSize, setPreviewImageSize, opacity, setOpacity}:
@@ -150,7 +150,7 @@ export function Nav({
 						setFacingMode(facingMode === "user" ? "environment" : "user");
 					}}
 				>
-					<FontAwesomeIcon icon={faRotate} className="text-white text-2xl rotate-90" />
+					<FontAwesomeIcon icon={faCamera} className="text-white text-2xl rotate-90" />
 				</button>
 				{/* Mirror button */}
 				<button
@@ -218,7 +218,7 @@ export function ShowImg({image, imageSize, opacity}: {image: string | null, imag
 	};
 
 	return (
-		<div className="z-1 touch-none"
+		<div className="z-1 touch-none overflow-hidden"
 			style={{
 				position: "absolute",
 				top: position.y,
