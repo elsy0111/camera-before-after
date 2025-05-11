@@ -290,6 +290,7 @@ export default function CameraEnhanced() {
 				height={WINDOW_WIDTH}
 				width={WINDOW_WIDTH}
 				className="h-full w-full object-contain"
+				forceScreenshotSourceSize={true}
 				ref={webcamRef}
 				mirrored={mirrored}
 				screenshotQuality={1}
