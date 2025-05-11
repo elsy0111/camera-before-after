@@ -6,11 +6,41 @@ import Image from "next/image";
 
 import React, {useCallback, useRef, useState} from "react";
 
+const ds = 40; // delta size
+
 // fontawesome icon
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faRotate} from "@fortawesome/free-solid-svg-icons";
 import {faUpload} from "@fortawesome/free-solid-svg-icons";
 import {faArrowRightArrowLeft} from "@fortawesome/free-solid-svg-icons";
+import {faPlus} from "@fortawesome/free-solid-svg-icons";
+import {faMinus} from "@fortawesome/free-solid-svg-icons";
+
+export function NavUpper(
+	{previewImageSize, setPreviewImageSize}: {previewImageSize: number; setPreviewImageSize: (size: number) => void;}) {
+	return (
+		<div className="absolute top-0 left-0 py-3 w-full px-10 flex items-center z-2 gap-10">
+			<button className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center"
+				onClick={() => {
+					if (previewImageSize - ds > 0) {
+						setPreviewImageSize(previewImageSize - ds);
+					}
+				}}
+			>
+				<FontAwesomeIcon icon={faMinus} className="text-white text-2xl rotate-90" />
+			</button>
+			<button className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center"
+				onClick={() => {
+					if (previewImageSize + ds <= 1000) {
+						setPreviewImageSize(previewImageSize + ds);
+					}
+				}}
+			>
+				<FontAwesomeIcon icon={faPlus} className="text-white text-2xl rotate-90" />
+			</button>
+		</div>
+	);
+}
 
 export function Nav({
 	capture,
@@ -46,14 +76,14 @@ export function Nav({
 	};
 
 	return (
-		<div className="absolute bottom-0 w-full px-10 mb-3 z-1">
+		<div className="absolute bottom-0 w-full px-10 z-1 py-3 bg-gray-800/10">
 			<div className="grid grid-cols-5 items-center gap-10">
 				{/* Upload button */}
 				<button
 					className="h-10 bg-yellow-500 rounded-lg flex items-center justify-center px-4 col-span-2"
 					onClick={handleUpload}
 				>
-					<FontAwesomeIcon icon={faUpload} className="text-white text-2xl" />
+					<FontAwesomeIcon icon={faUpload} className="text-white text-2xl rotate-90" />
 				</button>
 				{/* Capture button */}
 				<div className="justify-self-center">
@@ -74,7 +104,7 @@ export function Nav({
 						setFacingMode(facingMode === "user" ? "environment" : "user");
 					}}
 				>
-					<FontAwesomeIcon icon={faRotate} className="text-white text-2xl" />
+					<FontAwesomeIcon icon={faRotate} className="text-white text-2xl rotate-90" />
 				</button>
 				{/* Mirror button */}
 				<button
@@ -85,7 +115,7 @@ export function Nav({
 				>
 					<FontAwesomeIcon
 						icon={faArrowRightArrowLeft}
-						className="text-white text-2xl"
+						className="text-white text-2xl rotate-90"
 					/>
 				</button>
 			</div>
@@ -93,14 +123,14 @@ export function Nav({
 	);
 }
 
-export function ShowImg({image}: {image: string | null}) {
+export function ShowImg({image, imageSize}: {image: string | null, imageSize: number}) {
 	return (
 		<div className="absolute top-0 right-0 z-0">
 			{image && (
 				<Image
 					src={image}
 					height={0}
-					width={200}
+					width={imageSize}
 					alt="Taken photo"
 					className="rounded-bl-md shadow-lg"
 				/>
@@ -114,6 +144,7 @@ export default function CameraEnhanced() {
 	const [image, setImage] = useState<string | null>(null);
 	const [facingMode, setFacingMode] = useState<string>("environment");
 	const [mirrored, setMirrored] = useState<boolean>(false);
+	const [previewImageSize, setPreviewImageSize] = useState<number>(200);
 
 	const capture = useCallback(() => {
 		if (webcamRef.current) {
@@ -128,6 +159,8 @@ export default function CameraEnhanced() {
 
 	return (
 		<div className="h-svh bg-gray-500">
+			<NavUpper previewImageSize={previewImageSize} setPreviewImageSize={setPreviewImageSize} />
+			{/* Webcam component */}
 			<Webcam
 				audio={false}
 				screenshotFormat="image/jpeg"
@@ -145,7 +178,7 @@ export default function CameraEnhanced() {
 				setMirrored={setMirrored}
 				setImage={setImage}
 			/>
-			<ShowImg image={image} />
+			<ShowImg image={image} imageSize={previewImageSize} />
 		</div>
 	);
 }
