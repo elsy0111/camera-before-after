@@ -8,23 +8,28 @@ import React, { useCallback, useRef, useState } from "react";
 
 // fontawesome icon
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCamera } from "@fortawesome/free-solid-svg-icons";
+import { faRotate } from "@fortawesome/free-solid-svg-icons";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 export function Nav({
   capture,
-  setFacingMode,
   facingMode,
+  setFacingMode,
+  mirrored,
+  setMirrored,
 }: {
   capture: () => void;
-  setFacingMode: (mode: string) => void;
   facingMode: string;
+  setFacingMode: (mode: string) => void;
+  mirrored: boolean;
+  setMirrored: (mode: boolean) => void;
 }) {
   return (
     <div className="absolute bottom-0 w-full px-10 mb-3 z-1">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-center gap-4">
         {/* Upload button */}
-        <div className="w-20 h-10 bg-yellow-500 rounded-lg flex items-center justify-center px-4">
+        <div className="w-24 h-10 bg-yellow-500 rounded-lg flex items-center justify-center px-4">
           <FontAwesomeIcon icon={faUpload} className="text-white text-2xl" />
         </div>
         <button
@@ -36,7 +41,7 @@ export function Nav({
           </div>
         </button>
         <button
-          className="w-20 h-10 bg-red-500 rounded-lg flex items-center justify-center px-4"
+          className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center px-4"
           // change inside outside camera
           onClick={() => {
             if (facingMode === "user") {
@@ -46,7 +51,18 @@ export function Nav({
             }
           }}
         >
-          <FontAwesomeIcon icon={faCamera} className="text-white text-2xl" />
+          <FontAwesomeIcon icon={faRotate} className="text-white text-2xl" />
+        </button>
+        <button
+          className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center px-4"
+          onClick={() => {
+            setMirrored(!mirrored);
+          }}
+        >
+          <FontAwesomeIcon
+            icon={faArrowRightArrowLeft}
+            className="text-white text-2xl"
+          />{" "}
         </button>
       </div>
     </div>
@@ -74,6 +90,7 @@ export default function CameraEnhanced() {
   const webcamRef = useRef<Webcam>(null);
   const [image, setImage] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<string>("environment");
+  const [mirrored, setMirrored] = useState<boolean>(false);
 
   const capture = useCallback(() => {
     if (webcamRef.current) {
@@ -94,12 +111,14 @@ export default function CameraEnhanced() {
         videoConstraints={videoConstraints}
         className="h-full w-full object-cover"
         ref={webcamRef}
-        mirrored={true}
+        mirrored={mirrored}
       ></Webcam>
       <Nav
         capture={capture}
         facingMode={facingMode}
         setFacingMode={setFacingMode}
+        mirrored={mirrored}
+        setMirrored={setMirrored}
       />
       <ShowImg image={image} />
     </div>
