@@ -32,7 +32,6 @@ export function Nav({
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
-    input.capture = "environment";
     input.onchange = (event) => {
       const file = (event.target as HTMLInputElement).files?.[0];
       if (file) {
@@ -48,7 +47,7 @@ export function Nav({
 
   return (
     <div className="absolute bottom-0 w-full px-10 mb-3 z-1">
-      <div className="flex items-center justify-center gap-4">
+      <div className="flex items-center justify-around">
         {/* Upload button */}
         <button
           className="w-24 h-10 bg-yellow-500 rounded-lg flex items-center justify-center px-4"
@@ -64,30 +63,32 @@ export function Nav({
             <div className="h-15 w-15 rounded-full bg-white"></div>
           </div>
         </button>
-        <button
-          className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center px-4"
-          // change inside outside camera
-          onClick={() => {
-            if (facingMode === "user") {
-              setFacingMode("environment");
-            } else {
-              setFacingMode("user");
-            }
-          }}
-        >
-          <FontAwesomeIcon icon={faRotate} className="text-white text-2xl" />
-        </button>
-        <button
-          className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center px-4"
-          onClick={() => {
-            setMirrored(!mirrored);
-          }}
-        >
-          <FontAwesomeIcon
-            icon={faArrowRightArrowLeft}
-            className="text-white text-2xl"
-          />{" "}
-        </button>
+        <div className="flex items-center justify-between w-24">
+          <button
+            className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center px-4"
+            // change inside outside camera
+            onClick={() => {
+              if (facingMode === "user") {
+                setFacingMode("environment");
+              } else {
+                setFacingMode("user");
+              }
+            }}
+          >
+            <FontAwesomeIcon icon={faRotate} className="text-white text-2xl" />
+          </button>
+          <button
+            className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center px-4"
+            onClick={() => {
+              setMirrored(!mirrored);
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faArrowRightArrowLeft}
+              className="text-white text-2xl"
+            />{" "}
+          </button>
+        </div>
       </div>
     </div>
   );
