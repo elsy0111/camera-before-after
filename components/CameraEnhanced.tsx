@@ -8,60 +8,74 @@ import React, {useCallback, useRef, useState, useEffect} from "react";
 import {Loader} from "lucide-react";
 
 let WINDOW_WIDTH = 0;
+let WINDOW_HEIGHT = 0;
 if (typeof window !== "undefined") {
 	WINDOW_WIDTH = window.innerWidth;
+	WINDOW_HEIGHT = window.innerHeight;
 }
 
 // fontawesome icon
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCamera, faImage, faDownload, faArrowRightArrowLeft, faGhost, faMaximize} from "@fortawesome/free-solid-svg-icons";
+import {faCamera, faImage, faDownload, faArrowRightArrowLeft, faGhost, faMaximize, faCrosshairs} from "@fortawesome/free-solid-svg-icons";
 
 export function NavUpper(
-	{previewImageSize, setPreviewImageSize, opacity, setOpacity}:
-		{
-			previewImageSize: number; setPreviewImageSize: (size: number) => void; opacity: number;
-			setOpacity: (opacity: number) => void
-		}) {
+	{previewImageSize, setPreviewImageSize, opacity, setOpacity, centerImage}: {
+		previewImageSize: number; setPreviewImageSize: (size: number) => void; opacity: number;
+		setOpacity: (opacity: number) => void;
+		centerImage: () => void;
+	}) {
 	return (
-		<div className="absolute top-0 left-0 py-5 w-full px-10 flex items-center z-2 gap-5 justify-center bg-gray-800/30">
+		<div className="absolute top-0 left-0 py-5 w-full px-5 flex items-center z-2 gap-5 bg-gray-800/30">
+			{/* Center image button */}
+			<div className="flex-0">
+				<button
+					className="h-10 w-10 bg-purple-500 rounded-lg flex items-center justify-center"
+					onClick={centerImage}
+				>
+					<FontAwesomeIcon icon={faCrosshairs} className="text-white text-2xl" />
+				</button>
+			</div>
 			{/* Size slider */}
-			<div className="flex items-center">
-				<input
-					type="range"
-					min={0}
-					max={WINDOW_WIDTH}
-					value={previewImageSize}
-					onChange={(e) => {
-						setPreviewImageSize(parseInt(e.target.value));
-					}}
-					className="h-2 rounded-lg appearance-none cursor-pointer"
-					style={{
-						background: `linear-gradient(to right, #4caf50 ${previewImageSize / WINDOW_WIDTH * 100}%, 
+			<div className="flex-1">
+				<div className="flex items-center">
+					<input
+						type="range"
+						min={0}
+						max={WINDOW_WIDTH}
+						value={previewImageSize}
+						onChange={(e) => {
+							setPreviewImageSize(parseInt(e.target.value));
+						}}
+						className="h-2 rounded-lg appearance-none cursor-pointer w-full"
+						style={{
+							background: `linear-gradient(to right, #4caf50 ${previewImageSize / WINDOW_WIDTH * 100}%, 
 												 #bbb ${previewImageSize / WINDOW_WIDTH * 100}%)`,
-					}}></input>
-				{/* Size value */}
-				<div className="text-white text-lg rotate-90 ml-2">
-					<FontAwesomeIcon icon={faMaximize} className="text-white text-2xl" />
+						}}></input>
+					{/* Size value */}
+					<div className="text-white text-lg rotate-90 ml-2">
+						<FontAwesomeIcon icon={faMaximize} className="text-white text-2xl" />
+					</div>
 				</div>
 			</div>
 			{/* Opacity slider */}
-			<div className="flex items-center">
-				<input
-					type="range"
-					min={0}
-					max={100}
-					value={opacity}
-					onChange={(e) => {
-						setOpacity(parseInt(e.target.value));
-					}}
-					className="h-2 rounded-lg appearance-none cursor-pointer"
-					style={{
-						background: `linear-gradient(to right, #4caf50 ${opacity}%, #bbb ${opacity}%)`,
-					}}
-				/>
-				{/* Opacity value */}
-				<div className="text-white text-lg rotate-90 ml-2">
-					<FontAwesomeIcon icon={faGhost} className="text-white text-2xl" />
+			<div className="flex-1">
+				<div className="flex items-center">
+					<input
+						type="range"
+						min={0}
+						max={100}
+						value={opacity} onChange={(e) => {
+							setOpacity(parseInt(e.target.value));
+						}}
+						className="h-2 rounded-lg appearance-none cursor-pointer w-full"
+						style={{
+							background: `linear-gradient(to right, #4caf50 ${opacity}%, #bbb ${opacity}%)`,
+						}}
+					/>
+					{/* Opacity value */}
+					<div className="text-white text-lg rotate-90 ml-2">
+						<FontAwesomeIcon icon={faGhost} className="text-white text-2xl" />
+					</div>
 				</div>
 			</div>
 		</div>
@@ -126,7 +140,7 @@ export function Nav({
 	}
 
 	return (
-		<div className="absolute bottom-0 w-full px-10 z-2 py-3 bg-gray-800/30">
+		<div className="absolute bottom-0 w-full px-5 z-2 py-3 bg-gray-800/30">
 			<div className="grid grid-cols-5 items-center gap-10">
 				{/* Upload button */}
 				<button
@@ -192,8 +206,12 @@ export function Nav({
 	);
 }
 
-export function ShowImg({image, imageSize, opacity}: {image: string | null, imageSize: number, opacity: number}) {
-	const [position, setPosition] = useState<{x: number, y: number}>({x: 0, y: 0});
+export function ShowImg({image, imageSize, opacity
+	, position, setPosition
+}: {
+	image: string | null; imageSize: number; opacity: number;
+	position: {x: number, y: number}; setPosition: (position: {x: number, y: number}) => void;
+}) {
 	const isDragging = useRef<boolean>(false);
 	const offset = useRef({x: 0, y: 0});
 
@@ -262,7 +280,7 @@ export function ShowImg({image, imageSize, opacity}: {image: string | null, imag
 					height={imageSize}
 					width={imageSize}
 					alt="Taken photo"
-					className="rounded-md shadow-lg max-w-screen max-h-screen"
+					className="rounded-md shadow-md shadow-black/50 max-w-screen max-h-screen"
 					style={{opacity: opacity / 100}}
 				/>
 			)}
@@ -277,7 +295,8 @@ export default function CameraEnhanced() {
 	const [mirrored, setMirrored] = useState<boolean>(false);
 	const [previewImageSize, setPreviewImageSize] = useState<number>(200);
 	const [opacity, setOpacity] = useState<number>(100);
-	const [isLoading, setIsLoading] = useState<boolean>(false); // Add loading state
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [position, setPosition] = useState<{x: number, y: number}>({x: 0, y: 0});
 
 	const capture = useCallback(() => {
 		setIsLoading(true); // Set loading to true when capture starts
@@ -289,6 +308,33 @@ export default function CameraEnhanced() {
 			setIsLoading(false); // Set loading to false when image is captured
 		}, 10);
 	}, [webcamRef]);
+
+	// Function to center the image in the webcam view
+	const centerImage = useCallback(() => {
+		// Get the actual webcam container dimensions if available
+		let webcamHeight = WINDOW_HEIGHT;
+		let webcamWidth = WINDOW_WIDTH;
+
+		if (webcamRef.current) {
+			const webcamContainer = webcamRef.current.video;
+			if (webcamContainer) {
+				webcamHeight = webcamContainer.clientHeight;
+				webcamWidth = webcamContainer.clientWidth;
+			}
+		}
+
+		// Calculate the center position based on webcam dimensions
+		const centerX = 0;
+		const centerY = WINDOW_HEIGHT / 2 - webcamHeight / 2;
+
+		// width 100%
+		setPreviewImageSize(webcamWidth);
+
+		setPosition({
+			x: centerX,
+			y: centerY
+		});
+	}, [previewImageSize]);
 
 	const videoConstraints = {
 		facingMode: facingMode,
@@ -310,17 +356,21 @@ export default function CameraEnhanced() {
 	return (
 		<div className="h-svh bg-gray-500">
 			<NavUpper previewImageSize={previewImageSize} setPreviewImageSize={setPreviewImageSize} opacity={opacity}
-				setOpacity={setOpacity} />
-			<Webcam
-				audio={false}
-				screenshotFormat="image/png"
-				videoConstraints={videoConstraints}
-				className="h-full w-full object-contain"
-				forceScreenshotSourceSize={true}
-				ref={webcamRef}
-				mirrored={mirrored}
-				screenshotQuality={1}
-			></Webcam>
+				setOpacity={setOpacity}
+				centerImage={centerImage}
+			/>
+			{/* Webcam component */}
+			<div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+				<Webcam
+					audio={false}
+					screenshotFormat="image/png"
+					videoConstraints={videoConstraints}
+					forceScreenshotSourceSize={true}
+					ref={webcamRef}
+					mirrored={mirrored}
+					screenshotQuality={1}
+				></Webcam>
+			</div>
 			<Nav
 				capture={capture}
 				facingMode={facingMode}
@@ -331,7 +381,9 @@ export default function CameraEnhanced() {
 				setImage={setImage}
 				isLoading={isLoading}
 			/>
-			<ShowImg image={image} imageSize={previewImageSize} opacity={opacity} />
+			<ShowImg image={image} imageSize={previewImageSize} opacity={opacity}
+				position={position}
+				setPosition={setPosition} />
 		</div>
 	);
 }
