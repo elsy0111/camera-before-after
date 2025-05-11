@@ -22,7 +22,7 @@ export function NavUpper(
 			setOpacity: (opacity: number) => void
 		}) {
 	return (
-		<div className="absolute top-0 left-0 py-5 w-full px-10 flex items-center z-2 gap-5 justify-center">
+		<div className="absolute top-0 left-0 py-5 w-full px-10 flex items-center z-2 gap-5 justify-center bg-gray-800/30">
 			{/* Size slider */}
 			<div className="flex items-center">
 				<input
@@ -115,7 +115,7 @@ export function Nav({
 	}
 
 	return (
-		<div className="absolute bottom-0 w-full px-10 z-2 py-3 bg-gray-800/10">
+		<div className="absolute bottom-0 w-full px-10 z-2 py-3 bg-gray-800/30">
 			<div className="grid grid-cols-5 items-center gap-10">
 				{/* Upload button */}
 				<button
@@ -276,11 +276,11 @@ export default function CameraEnhanced() {
 	}, []);
 
 	if (!isClient) {
-		return <div className="h-screen flex items-center justify-center">Loading...</div>;
+		return <div className="h-screen flex items-center justify-center text-5xl">Loading...</div>;
 	}
 
 	return (
-		<div className="h-svh bg-gray-500">
+		<div className="h-svh bg-gray-500 overflow-hidden">
 			<NavUpper previewImageSize={previewImageSize} setPreviewImageSize={setPreviewImageSize} opacity={opacity}
 				setOpacity={setOpacity} />
 			<Webcam
