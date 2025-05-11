@@ -5,6 +5,7 @@ import Webcam from "react-webcam";
 import Image from "next/image";
 
 import React, {useCallback, useRef, useState, useEffect} from "react";
+import {Loader} from "lucide-react";
 
 let WINDOW_WIDTH = 0;
 if (typeof window !== "undefined") {
@@ -75,6 +76,7 @@ export function Nav({
 	setMirrored,
 	image,
 	setImage,
+	isLoading,
 }: {
 	capture: () => void;
 	facingMode: string;
@@ -83,7 +85,10 @@ export function Nav({
 	setMirrored: (mode: boolean) => void;
 	image: string | null;
 	setImage: (image: string | null) => void;
+	isLoading: boolean;
 }) {
+	const [isDownloading, setIsDownloading] = useState<boolean>(false);
+
 	// function to handle Upload
 	const handleUpload = () => {
 		const input = document.createElement("input");
@@ -105,12 +110,18 @@ export function Nav({
 	// function to handle Download
 	const handleDownload = () => {
 		if (image) {
-			const link = document.createElement("a");
-			link.href = image;
-			link.download = `image_${new Date().toISOString()}.png`;
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
+			setIsDownloading(true);
+			setTimeout(() => {
+				const link = document.createElement("a");
+				link.href = image;
+				link.download = `image_${new Date().toISOString()}.png`;
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+				setTimeout(() => {
+					setIsDownloading(false);
+				}, 500);
+			}, 10);
 		}
 	}
 
@@ -126,20 +137,32 @@ export function Nav({
 				</button>
 				{/* Download button */}
 				<button
-					className="h-10 bg-green-500 rounded-lg flex items-center justify-center px-5"
+					className="h-10 bg-green-500 rounded-lg flex items-center justify-center px-5 disabled:bg-green-800"
 					onClick={handleDownload}
+					disabled={isDownloading}
 				>
-					<FontAwesomeIcon icon={faDownload} className="text-white text-2xl rotate-90" />
+					{isDownloading ? (
+						<div className="flex items-center">
+							<Loader className="h-6 w-6 text-white animate-spin" />
+						</div>
+					) : (
+						<FontAwesomeIcon icon={faDownload} className="text-white text-2xl rotate-90" />
+					)}
 				</button>
 				{/* Capture button */}
 				<div className="justify-self-center">
 					<button
-						className="h-20 w-20 bg-white rounded-full flex items-center justify-center"
+						className="h-20 w-20 bg-white rounded-full flex items-center justify-center disabled:opacity-50"
 						onClick={capture}
+						disabled={isLoading}
 					>
-						<div className="h-18 w-18 rounded-full bg-black flex items-center justify-center">
-							<div className="h-15 w-15 rounded-full bg-white"></div>
-						</div>
+						{isLoading ? (
+							<Loader className="h-10 w-10 text-black animate-spin" />
+						) : (
+							<div className="h-18 w-18 rounded-full bg-black flex items-center justify-center">
+								<div className="h-15 w-15 rounded-full bg-white"></div>
+							</div>
+						)}
 					</button>
 				</div>
 				{/* Change camera button */}
@@ -254,18 +277,23 @@ export default function CameraEnhanced() {
 	const [mirrored, setMirrored] = useState<boolean>(false);
 	const [previewImageSize, setPreviewImageSize] = useState<number>(200);
 	const [opacity, setOpacity] = useState<number>(100);
+	const [isLoading, setIsLoading] = useState<boolean>(false); // Add loading state
 
 	const capture = useCallback(() => {
-		if (webcamRef.current) {
-			const image = webcamRef.current.getScreenshot();
-			setImage(image);
-		}
+		setIsLoading(true); // Set loading to true when capture starts
+		setTimeout(() => { // Adding a setTimeout to ensure UI updates before taking the screenshot
+			if (webcamRef.current) {
+				const image = webcamRef.current.getScreenshot();
+				setImage(image);
+			}
+			setIsLoading(false); // Set loading to false when image is captured
+		}, 10);
 	}, [webcamRef]);
 
 	const videoConstraints = {
 		facingMode: facingMode,
 		height: 1080, // FHD
-		width: 1920, 
+		width: 1920,
 	};
 
 	const [isClient, setIsClient] = useState(false);
@@ -301,6 +329,7 @@ export default function CameraEnhanced() {
 				setMirrored={setMirrored}
 				image={image}
 				setImage={setImage}
+				isLoading={isLoading}
 			/>
 			<ShowImg image={image} imageSize={previewImageSize} opacity={opacity} />
 		</div>
