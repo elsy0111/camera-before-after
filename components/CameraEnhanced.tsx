@@ -25,7 +25,7 @@ export function NavUpper(
 		centerImage: () => void;
 	}) {
 	return (
-		<div className="absolute top-0 left-0 py-5 w-full px-5 flex items-center z-2 gap-5 bg-gray-800/30">
+		<div className="absolute top-0 left-0 py-5 w-full px-5 flex items-center z-2 gap-3 bg-gray-800/30">
 			{/* Center image button */}
 			<div className="flex-0">
 				<button
@@ -37,7 +37,7 @@ export function NavUpper(
 			</div>
 			{/* Size slider */}
 			<div className="flex-1">
-				<div className="flex items-center">
+				<div className="flex items-center gap-1">
 					<input
 						type="range"
 						min={0}
@@ -52,14 +52,14 @@ export function NavUpper(
 												 #bbb ${previewImageSize / WINDOW_WIDTH * 100}%)`,
 						}}></input>
 					{/* Size value */}
-					<div className="text-white text-lg rotate-90 ml-2">
+					<div className="text-white text-lg rotate-90 h-10 w-10 flex items-center justify-center">
 						<FontAwesomeIcon icon={faMaximize} className="text-white text-2xl" />
 					</div>
 				</div>
 			</div>
 			{/* Opacity slider */}
 			<div className="flex-1">
-				<div className="flex items-center">
+				<div className="flex items-center gap-1">
 					<input
 						type="range"
 						min={0}
@@ -73,7 +73,7 @@ export function NavUpper(
 						}}
 					/>
 					{/* Opacity value */}
-					<div className="text-white text-lg rotate-90 ml-2">
+					<div className="text-white text-lg rotate-90 h-10 w-10 flex items-center justify-center">
 						<FontAwesomeIcon icon={faGhost} className="text-white text-2xl" />
 					</div>
 				</div>
